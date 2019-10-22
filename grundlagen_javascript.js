@@ -56,3 +56,22 @@ rl.question("Bitte geben Sie eine Bewertung ein ", function(answer){
         return rl.close();
     }
 })
+
+// Aufgabe 4 
+// Random Werte n mal berechnen 
+var i = 0;
+while (i < 3){
+    var angegBewert= Math.ceil(Math.random() * 5);
+    anzahlBewert++;
+			sumeBewert += angegBewert;
+			currBewert= sumeBewert /anzahlBewert;
+			
+		
+			console.log("angegebene Bewertung ist: "+ angegBewert+ '\n'+
+					"Anzahl Bewetungen: "+anzahlBewert+ '\n'+
+					"Aktuelle Bewertung: "+currBewert);
+            
+                    i++;
+ 
+}
+
