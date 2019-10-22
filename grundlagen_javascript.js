@@ -28,34 +28,7 @@ console.log("Max Bewertung ist: "+maxBewert+ '\n'+
             "Aktuelle Bewertung: "+currBewert );
 
 anzahlBewert =0;
-currBewert =0;            
-// Aufgabe 3
-// Bewertungen vom User einlesen und entsprechnde Werte ändern
-
-// Scanner einlegen
-const readline = require('readline');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-rl.question("Bitte geben Sie eine Bewertung ein ", function(answer){
-    if (answer > maxBewert || answer < 0){
-        console.error("INVALID RATING!");
-        return rl.close();
-    }
-    else {
-        anzahlBewert++;
-			sumeBewert +=1*answer;
-			currBewert= sumeBewert /anzahlBewert;
-			
-		
-			console.log("Max Bewertung ist: "+maxBewert+ '\n'+
-					"Anzahl Bewetungen: "+anzahlBewert+ '\n'+
-					"Aktuelle Bewertung: "+currBewert);
-        return rl.close();
-    }
-})
+currBewert =0;    
 
 // Aufgabe 4 
 // Random Werte n mal berechnen 
@@ -73,5 +46,45 @@ while (i < 3){
             
                     i++;
  
+}
+
+// Aufgabe 3
+// Bewertungen vom User einlesen und entsprechnde Werte ändern
+
+// Scanner einlegen
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+var bewert = function (){
+	rl.question("Bitte geben Sie eine Bewertung ein ", function(answer){
+		if(answer> maxBewert || answer<0 || answer == 0)
+			return rl.close();
+		
+
+			berechnen(answer);
+			
+		
+			console.log("Max Bewertung ist: "+maxBewert+ '\n'+
+					"Anzahl Bewetungen: "+anzahlBewert+ '\n'+
+					"Aktuelle Bewertung: "+currBewert + '\n'+ sumeBewert);
+
+			bewert();	
+		
+					
+
+		});
+};
+bewert();
+
+
+var berechnen = function(bewertung){
+
+    anzahlBewert++;
+			sumeBewert +=1*bewertung;
+			currBewert= sumeBewert /anzahlBewert;
+
 }
 
