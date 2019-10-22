@@ -79,7 +79,8 @@ var bewert = function (){
 };
 bewert();
 
-
+// Aufgabe 5 
+// Eine Funktion zur Berechnung 
 var berechnen = function(bewertung){
 
     anzahlBewert++;
