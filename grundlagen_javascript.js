@@ -26,3 +26,5 @@ console.log("Max Bewertung ist: "+maxBewert+ '\n'+
 			"Anzahl Bewertungen: "+anzahlBewert+ '\n'+
             "Aktuelle Bewertung: "+currBewert );
 
+//Aufgabe 3
+
