@@ -1,0 +1,13 @@
+Für unser gdw Projekt entschieden wir uns das Beispielszenario Nummer 1 zu benutzen, Horst's Pizzalieferservice. Dabei geht es darum das Horst, der Betreiber einer kleinen Pizzeria in Gummersbach, beschlossen hat einen Lieferservice anzubieten. Jedoch bereitet ihm die Koordination der Lieferung Schwierigkeiten. Während mehrere Fahrer Lieferungen an verschiedene Adressen transportieren, weiß Horst nicht wie der aktuelle Stand der Lieferungen ist und wo sich welches Fahrzeug momentan befindet. Dadurch fällt es ihm schwer, Fahrten optimal zu planen. Er wäre auch gerne in der Lage zu wissen, welcher Fahrer am geeignetsten ist, neue Bestellungen anzunehmen. 
+
+Dies stellt uns vor einige Probleme, welche wir mit einer Software beheben wollen. Als Priorität haben wir 3 Probleme, mit welchen wir uns befassen wollen:
+
+1. Anzeige der Koordinaten der Lieferanten 
+2. Planung der schnellsten Routen für Fahrer
+3. Wissen, welcher Fahrer neu einkommende Bestellungen übernehmen soll
+
+Zur Zeit ist geplant, das wir diese Probleme auch in dieser Reihenfolge bearbeiten, da diese aufeinander aufbauen und Voraussetzung für die vorherigen sind. Vor einer größeren Schwierigkeit stellt sich uns die Frage, wie viele Bestellungen ein Lieferant gleichzeitig befahren soll. Würde der Fahrer bei bereits zu wenigen Bestellungen losfahren, müssten neu reinkommende Bestellungen zu lange auf wiederkehrende Fahrer warten. Würden die Fahrer auf zu viele Bestellungen warten, könnte es dazu kommen das die ersten Bestellungen eine zu lange Wartezeit haben. Am besten wäre es wohl, sich auf eine Pauschale Anzahl an Bestellungen zu einigen, welcher ein Fahrer pro Fahrt abfahren soll. Diese müsste unter Umständen der Uhrzeit angepasst werden, da Abends durchschnittlich mehr Leute Essen bestellen. 
+
+Für die 3. Aufgabestellung wäre es wichtig, zu wissen welcher Fahrer zum Zeitpunkt einer neuen Bestellung am nähsten an der Pizzeria dran ist. Ob dies das System von selbst erkennen soll oder man dies von einer Karte ablesen sollte, müsste noch besprochen werden.
+
+Andere Probleme, welche relevant für eine gute Organisation wären aber sekundäre Priorität haben, wäre eine Anzeige von Unwetterwarnung oder Staus. Diese müssten dann bei der Berechnung von Routen beachtet werden. 
