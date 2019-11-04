@@ -168,14 +168,16 @@ function Ratings (name, anzahlBestimmungen, sum, aktuelleBewert){
 	this.sum = sum;
 	this.aktuelleBewert=0;
 	this.durchschnitt = () => {
-			return this.sum/this.anzahlBestimmungen;
+		return this.sum/this.anzahlBestimmungen;
+			 
+
 	};
 };
 
 
 let rating1 = new Ratings("App1",5,25,0);
 
-console.log(rating1.name, rating1.anzahlBestimmungen, rating1.sum, rating1.durchschnitt);
+console.log(rating1.name, rating1.anzahlBestimmungen, rating1.sum, rating1.durchschnitt());
 
 
 //Aufgaben 5
@@ -199,4 +201,7 @@ function two (){
 	console.log( world.concat(" ",hello)); 
 };
 
- two(); // error cause world is defined within function hello scope
+ //two(); // error cause world is defined within function hello scope
+
+
+
