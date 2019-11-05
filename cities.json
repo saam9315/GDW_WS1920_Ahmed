@@ -1,81 +1,63 @@
 [
-    {
-        "name": "Berlin",
-        "rank":1,
-        "einwohner":3644826,
-        "bundesland": "Berlin"
+  {
+    "name": "Berlin",
+    "rank": 1,
+    "einwohner": 3644826,
+    "bundesland": "Berlin"
+  },
+  {
+    "name": "Hamburg",
+    "rank": 2,
+    "einwohner": 1841179,
+    "bundesland": "Hamburg"
+  },
+  {
+    "name": "München",
+    "rank": 3,
+    "einwohner": 1471508,
+    "bundesland": "Bayern"
+  },
+  {
+    "name": "Köln",
+    "rank": 4,
+    "einwohner": 1085664,
+    "bundesland": "NRW"
+  },
+  {
+    "name": "Frankfurt",
+    "rank": 5,
+    "einwohner": 753056,
+    "bundesland": "Hessen"
+  },
+  {
+    "name": "Stuttgart",
+    "rank": 6,
+    "einwohner": 634830,
+    "bundesland": "Baden-Württemberg"
+  },
+  {
+    "name": "Düsseldorf",
+    "rank": 7,
+    "einwohner": 619294,
+    "bundesland": "NRW"
+  },
+  {
+    "name": "Leipzig",
+    "rank": 8,
+    "einwohner": 587857,
+    "bundesland": "Sachsen"
+  },
+  {
+    "name": "Dortmund",
+    "rank": 9,
+    "einwohner": 587010,
+    "bundesland": "NRW"
+  },
+  {
+    "name": "Essen",
+    "rank": 10,
+    "einwohner": 583109,
+    "bundesland": "NRW"
+  }
 
-    },
-
-    {
-        "name": "Hamburg",
-        "rank":2,
-        "einwohner":1841179,
-        "bundesland": "Hamburg"
-
-    },
-
-    {
-        "name": "München",
-        "rank":3,
-        "einwohner":1471508,
-        "bundesland": "Bayern"
-
-    },
-
-    {
-        "name": "Köln",
-        "rank":4,
-        "einwohner":1085664,
-        "bundesland": "NRW"
-
-    },
-
-    {
-        "name": "Frankfurt",
-        "rank":5,
-        "einwohner":753056,
-        "bundesland": "Hessen"
-
-    },
-
-    {
-        "name": "Stuttgart",
-        "rank":6,
-        "einwohner":634830,
-        "bundesland": "Baden-Württemberg"
-
-    },
-
-    {
-        "name": "Düsseldorf",
-        "rank":7,
-        "einwohner":619294,
-        "bundesland": "NRW"
-
-    },
-
-    {
-        "name": "Leipzig",
-        "rank":8,
-        "einwohner":587857,
-        "bundesland": "Sachsen"
-
-    },
-
-    {
-        "name": "Dortmund",
-        "rank":9,
-        "einwohner":587010,
-        "bundesland": "NRW"
-
-    },
-
-    {
-        "name": "Essen",
-        "rank":10,
-        "einwohner":583109,
-        "bundesland": "NRW"
-
-    }
 ]

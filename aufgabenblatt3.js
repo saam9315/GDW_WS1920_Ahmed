@@ -29,31 +29,33 @@ const findAndDelete = (pfad, name)=>{
             console.log("File read failed:",err);
         return;
         }
+        else{
         cities = JSON.parse(result);
         for(let i=0;i<cities.length;i++) {
             if(cities[i].name == name){
                 cities.splice(i,1);
-                
+                break;
             }
         }
 
-        for(let i=0;i<cities.length;i++) {
-            console.log(cities[i].name);
-        }
-       
+        fs.writeFile('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', JSON.stringify(cities, null, 2), err => {
+            if (err) {
+                console.log('Error writing file', err)
+                return;
+            } else {
+                console.log('Successfully wrote file')
+                return;
+            }
+        });
+        
+    }
         
     });
-
-    fs.writeFile('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', JSON.stringify(cities), err => {
-        if (err) {
-            console.log('Error writing file', err)
-        } else {
-            console.log('Successfully wrote file')
-        }
-    })
     
-
 };
+
+
+
 
 
 
@@ -85,9 +87,14 @@ const addCity = (pfad)=>{
                         "bundesland": answer3
                     }
                     cities.push(newCity);
-                    for(let i=0;i<cities.length;i++) {
-                        console.log(cities[i].name);
-                    }
+                    
+                    fs.writeFile('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', JSON.stringify(cities, null, 2), err => {
+                        if (err) {
+                            console.log('Error writing file', err)
+                        } else {
+                            console.log('Successfully wrote file')
+                        }
+                    });
                     rl.close();
 
                 });
@@ -101,15 +108,13 @@ const addCity = (pfad)=>{
 
 
 
-addCity('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json');
+//addCity('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json');
 
-/*readJSON('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', (err, result) => {
-    console.log(result); // JSON Daten ...});
 
-});*/
 
 module.exports = {
-    findAndDelete
+    findAndDelete,
+    addCity
 };
 
 //Aufgabe 3
