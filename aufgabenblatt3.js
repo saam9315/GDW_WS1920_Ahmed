@@ -7,8 +7,20 @@ const fs = require("fs");
 
 //Reading a json file
 
+
 const readJSON = (pfad,callback) => {
-    fs.readFile(pfad, 'utf8', callback);
+    try{
+    fs.readFile(pfad, 'utf8', (err,result)=> {
+        if(err)
+            callback(err)
+            else
+            callback(null,result);
+    });
+    }
+    catch(error){
+        console.log(error);
+
+    }
 };
 
 
@@ -17,7 +29,15 @@ module.exports ={readJSON};
 
 
 readJSON('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json',(err,result)=>{
-
+        try{
+            let data = JSON.parse(result);
+            console.log(data[0].name);
+            return;
+        }
+        catch (error) {
+                console.log(error);
+                return;
+        }
 });
 
 var cities;
@@ -88,7 +108,7 @@ const addCity = (pfad)=>{
                     }
                     cities.push(newCity);
                     
-                    fs.writeFile('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', JSON.stringify(cities, null, 2), err => {
+                    fs.writeFile('/Users/Sam 1/Desktop/GDW/GDW_WS1920_Ahmed_Kolesnikov_Heinlein/cities.json', JSON.stringify(cities, null, 2), (err) => {
                         if (err) {
                             console.log('Error writing file', err)
                         } else {

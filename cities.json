@@ -58,6 +58,11 @@
     "rank": 10,
     "einwohner": 583109,
     "bundesland": "NRW"
+  },
+  {
+    "name": "Gummersbach",
+    "rank": 10,
+    "einwohnerzahl": "1",
+    "bundesland": "NRW"
   }
-
 ]
