@@ -1,0 +1,20 @@
+const request = require('request');
+
+let apiKey = "8d19a476a162e6b73d18fa9e265fb29a";
+
+let ip = "85.90.227.224";
+
+let url = `http://api.ipstack.com/${ip}?access_key=${apiKey}`
+
+
+request(url, function (err, response, body) {
+    if(err){
+        console.log('error:', error);
+    } else {
+        let ipstack = JSON.parse(body);
+
+        let message = `The adress of ${ipstack.ip} is on the ${ipstack.latitude} and ${ipstack.longitude} in 
+    ${ipstack.zip}, ${ipstack.city}, ${ipstack.region_name}!`;
+        console.log(message);
+    }
+});
