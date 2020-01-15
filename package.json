@@ -1,22 +1,16 @@
 {
-  "name": "gdw_ws1920_ahmed",
+  "name": "myapp",
   "version": "1.0.0",
-  "description": "Hello World!",
-  "main": "WeatherAPI.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/saam9315/GDW_WS1920_Ahmed.git"
-  },
-  "author": "",
+  "author": "Osama Ahmed",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/saam9315/GDW_WS1920_Ahmed/issues"
-  },
-  "homepage": "https://github.com/saam9315/GDW_WS1920_Ahmed#readme",
   "dependencies": {
-    "@google/maps": "^1.0.2"
-  }
+    "@google/maps": "^1.0.2",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "description": ""
 }
