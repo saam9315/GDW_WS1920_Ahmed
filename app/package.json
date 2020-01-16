@@ -1,5 +1,5 @@
 {
-  "name": "myapp",
+  "name": "app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,5 +13,13 @@
     "fs": "0.0.1-security"
   },
   "devDependencies": {},
-  "description": ""
+  "description": "GDW App PizzaGummersbach",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saam9315/GDW_WS1920_Ahmed.git"
+  },
+  "bugs": {
+    "url": "https://github.com/saam9315/GDW_WS1920_Ahmed/issues"
+  },
+  "homepage": "https://github.com/saam9315/GDW_WS1920_Ahmed#readme"
 }
