@@ -6,27 +6,6 @@ var path = require('path');
 
 var usersCounter=0;
 
-
-const readJSON = (pfad,callback) => {
-    try{
-        fs.readFile(pfad, "utf8", (err,result)=> {
-        if(err)
-            callback(err)
-            else
-            callback(null,result);
-    });
-    }
-    catch(error){
-        console.log(error);
-
-    }
-};
-
-
-
-
-
-
 class bestellung {
     constructor(ID, kundeID, receivedAt, pizzaType, numPizzas, address, waitTime) {
         this.ID = ID;
@@ -71,6 +50,21 @@ app.use(
   app.use(bodyParser.json())
 
 
+  const readJSON = (pfad,callback) => {
+    try{
+        fs.readFile(pfad, "utf8", (err,result)=> {
+        if(err)
+            callback(err)
+            else
+            callback(null,result);
+    });
+    }
+    catch(error){
+        console.log(error);
+
+    }
+};
+
 const PORT = process.env.PORT || 3000 ;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
@@ -79,16 +73,20 @@ app.listen(PORT, () => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Get \\ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', (req, res) => res.send('Pizza Gummersbach Online!'));
 
 app.get('/user', (req, res) => {
-    promiseGoogleAPI.then(function(value) {
+    /*promiseGoogleAPI.then(function(value) {
         res.send((value).toString());
         routeDuration = value;
+      });*/
+
+      getUserDatabasePromise(req.body.user.ID).then(user => {
+        console.log(user)
+        res.send(user);
       });
-
-
-  });
+      
+});
 
 
 
@@ -111,7 +109,7 @@ app.post('/user', (req, res)=>{
             );
             usersCounter++;
             console.log(user1.firstname);
-            updateDatabase(user1);
+            addUserUpdateDatabase(user1);
             res.send(user1)
 
 
@@ -122,8 +120,44 @@ app.post('/user', (req, res)=>{
         }
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                                            // Database \\ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const getUserDatabasePromise = function(userID) {
+    return new Promise(function(resolve, reject) {
+        let requiredUser = new user();
+        readJSON(path.join(__dirname, 'users.json'), (err, result) => {
+            if (!err){
+            try {
+                let usersArray = JSON.parse(result);
+                for (let i = 0; i < usersArray.length ; i++){
+                    if (usersArray[i].ID == userID){
+                        requiredUser.ID = userID;
+                        requiredUser.firstname = usersArray[i].firstname;
+                        requiredUser.lastname = usersArray[i].lastname;
+                        requiredUser.address = usersArray[i].address;
+                        requiredUser.phoneNumber = usersArray[i].phoneNumber;
 
-function updateDatabase(newUser) {
+                        resolve(requiredUser);
+
+                    }
+                }
+                reject(Error("It broke"));
+                }
+                
+        
+            catch (error) {
+                console.log(error);
+                
+            }
+        }
+        else 
+            console.log(err)
+        });
+
+    });
+  }    
+function addUserUpdateDatabase(newUser) {
         console.log(path.join(__dirname, 'users.json'))
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
@@ -189,6 +223,12 @@ function updateDatabase(newUser) {
 
 
 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                                            // APIs \\ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
  
   const promiseGoogleAPI = new Promise(function(resolve, reject) {
