@@ -4,9 +4,10 @@ const bodyParser = require('body-parser')
 const app = express() ;
 var path = require('path');
 
-var usersCounter=0;
+var usersCount=0;
+var ordersCount =0;
 
-class bestellung {
+class order {
     constructor(ID, kundeID, receivedAt, pizzaType, numPizzas, address, waitTime) {
         this.ID = ID;
         this.kundeID = kundeID;
@@ -103,27 +104,21 @@ app.get('/user', (req, res) => {
 
 app.post('/user', (req, res)=>{
    
-        
-            //let usersArray = JSON.parse(result);
-            let user1 = new user(
-                (usersCounter +1 ).toString(),
-                req.body.user.firstname,
-                req.body.user.lastname,
-                req.body.user.address.toString(),
-                req.body.user.phoneNumber.toString()
-            );
-            usersCounter++;
-            console.log(user1.firstname);
-
-            addUserUpdateDatabase(user1).then(userID => {
+            addUserUpdateDatabase(req).then(userID => {
                 console.log(userID)
                 res.send(userID.toString());
               });
-            
-
-
-        
       
+});
+
+app.post('/order', (req, res)=>{
+   
+
+    addOrderUpdateDatabase(req).then(waitingTime => {
+        console.log(waitingTime)
+        res.send(waitingTime);
+      });
+
 });
 
 
@@ -132,8 +127,7 @@ app.post('/user', (req, res)=>{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.put('/user', (req, res)=>{
    
-        
-    //let usersArray = JSON.parse(result);
+    
     let user1 = new user(
         req.body.user.ID,
         req.body.user.firstname,
@@ -172,6 +166,92 @@ app.delete('/user', (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Database \\ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const addOrderUpdateDatabase = function(req) {
+    return new Promise(function(resolve, reject) {    
+        //console.log(path.join(__dirname, 'users.json'))
+
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+
+
+              
+                
+                let newOrder = new order(
+                (ordersCount+1).toString(),
+                req.body.order.ID,
+                req.body.order.receivedAt,
+                req.body.order.pizzaType,
+                req.body.order.numPizzas,
+                req.body.order.address,
+                " "
+            );
+                
+            
+                ordersCount ++;
+                if (usersCount ==1){
+                    let usersArray = new Array();
+                    usersArray.push(newUser);
+                    fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
+                        if (err) {
+                            console.log('Error writing file', err);
+                        }
+                        else {
+                            console.log('Successfully wrote file');
+                            resolve(newUser.ID);
+    
+                            /*readJSON(path.join(__dirname, 'users.json'), (err, result) => {
+                                console.log(result);
+                            });*/
+                            
+                        }
+                    });
+                    
+
+                }
+                else {
+                let usersArray =JSON.parse(result);
+
+                usersArray.push(newUser);
+
+                console.log(usersArray)
+                //console.log(JSON.stringify(usersArray));
+                fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
+                    if (err) {
+                        console.log('Error writing file', err);
+                    }
+                    else {
+                        
+                        console.log('Successfully wrote file');
+                            resolve(newUser.ID);
+
+                        /*readJSON(path.join(__dirname, 'users.json'), (err, result) => {
+                            console.log(result);
+                        });*/
+                        
+                    }
+                });
+                /*fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(usersArray));
+                readJSON(path.join(__dirname, 'users.json'), (err, result) => {
+                    console.log(result);
+                });*/
+               
+            }
+        }
+            catch (error) {
+                console.log(error);
+                
+            }
+        }
+        else 
+            console.log(err)
+        });
+
+    })
+  }
+
+
+
 const deleteUserUpdateDatabase = function(userID) {
     return new Promise(function(resolve, reject) {
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
@@ -266,7 +346,7 @@ const updateUserUpdateDatabase = function(user) {
             console.log(err)
         });
 
-    }).catch(alert);
+    })
   }
 
 
@@ -307,17 +387,25 @@ const getUserDatabase = function(userID) {
     })
   }
 
-const addUserUpdateDatabase = function(newUser) {
+const addUserUpdateDatabase = function(req) {
     return new Promise(function(resolve, reject) {    
         console.log(path.join(__dirname, 'users.json'))
+
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
             try {
               
                 
-                //console.log(result);
-                
-                if (usersCounter ==1){
+                let newUser = new user(
+                (usersCount +1 ).toString(),
+                req.body.user.firstname,
+                req.body.user.lastname,
+                req.body.user.address.toString(),
+                req.body.user.phoneNumber.toString()
+            );
+            
+            usersCount++;
+                if (usersCount ==1){
                     let usersArray = new Array();
                     usersArray.push(newUser);
                     fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
@@ -334,6 +422,7 @@ const addUserUpdateDatabase = function(newUser) {
                             
                         }
                     });
+                    
 
                 }
                 else {
