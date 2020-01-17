@@ -12,11 +12,11 @@ request(url, function (err, response, body) {
   if(err){
     console.log('error:', error);
   } else {
-    let weather = JSON.parse(body);
+    let result = JSON.parse(body);
 
-    let message = `It's ${weather.main.temp} degrees in
-    ${weather.name}!`;
-    console.log(message);
+    //let message = `It's ${weather.main.temp} degrees in
+    //${weather.name}!`;
+    console.log(result.weather[0].main);
   }
 });
 
