@@ -80,25 +80,32 @@ app.listen(PORT, () => {
 
 app.get('/', (req, res) => res.send('Pizza Gummersbach Online!'));
 
-app.get('/user', (req, res) => {
-    /*promiseGoogleAPI.then(function(value) {
-        res.send((value).toString());
-        routeDuration = value;
-      });*/
+app.get('/user/:user_id', (req, res) => {
 
-      
-     getUserDatabase(req.body.user.ID).then(user => {
+     getUserDatabase(req.params.user_id).then(function (user) {
         console.log(user)
-        res.send(user);
-      });
-    
+        res.status(200).json(user);
+
+      }, function (error){
+        res.status(404).send(error)
+    }
+      );
+
     });
 
-/*  converteAdressToLatLong("Gummersbach, Deutschland").then(lat => {
-        console.log(lat)
-        res.send(lat.toString());
+    app.get('/order/:order_id', (req, res) => {
 
-      }); */
+        getOrderDatabase(req.params.order_id).then(function (order) {
+           //console.log(user)
+           res.status(200).json(order);
+   
+         }, function (error){
+           res.status(404).send(error)
+       }
+         );
+   
+       });
+   
   
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Post \\ 
@@ -106,25 +113,27 @@ app.get('/user', (req, res) => {
 
 app.post('/user', (req, res)=>{
    
-            addUserUpdateDatabase(req).then(userID => {
-                console.log(userID)
-                res.send(userID.toString());
-              });
+              addUserUpdateDatabase(req).then(function (user) {
+                //console.log(user)
+                res.status(201).json(user);
+        
+              }, function (error){
+                res.status(500).send(error)
+            }
+              );          
       
 });
 
 app.post('/order', (req, res)=>{
    
-   addOrderUpdateDatabase(req).then(newOrder => {
-        /*console.log(resultArray[0])
-        console.log(resultArray[1])*/
-        console.log(newOrder)
-        res.send(newOrder);
-      });
+     addOrderUpdateDatabase(req).then(function (newOrder) {
+        //console.log(user)
+        res.status(201).send(newOrder);
 
-       /*promiseWeatherAPI.then(main => {
-        res.send(main)
-       });*/
+      }, function (error){
+        res.status(500).send(error)
+    }
+      );  
 
 });
 
@@ -132,26 +141,47 @@ app.post('/order', (req, res)=>{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Put \\ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.put('/user', (req, res)=>{
-   
-    
+app.put('/user/:user_id', (req, res)=>{
     let user1 = new user(
-        req.body.user.ID,
+        req.params.user_id,
         req.body.user.firstname,
         req.body.user.lastname,
         req.body.user.address,
         req.body.user.phoneNumber
     );
     
-    console.log(user1.ID);
 
-    updateUserUpdateDatabase(user1).then(user => {
-        res.send(user);
-      });
+      updateUserUpdateDatabase(user1).then(function (user) {
+        //console.log(user)
+        res.status(200).send(user);;
+
+      }, function (error){
+        res.status(500).send(error)
+    }
+      );    
+
+});
+
+
+
+app.put('/order/:order_id', (req, res)=>{
+    let order1 = new order();
+
+        order1.ID = req.params.order_id,
+        order1.pizzaType = req.body.order.pizzaType,
+        order1.numPizzas = req.body.order.numPizzas,
+
+    
     
 
+      updateOrderUpdateDatabase(order1).then(function (order) {
+        //console.log(user)
+        res.status(200).send(order);;
 
-
+      }, function (error){
+        res.status(500).send(error)
+    }
+      );    
 
 });
 
@@ -161,18 +191,135 @@ app.put('/user', (req, res)=>{
 
 app.delete('/user', (req, res) => {
 
+      deleteUserUpdateDatabase(req.body.user.ID).then(function (message) {
+        res.status(200).send(message);
 
-      deleteUserUpdateDatabase(req.body.user.ID).then(message => {
-        console.log(message)
-        res.send(message);
-      });
+      }, function (error){
+        res.status(500).send(error)
+    }
+      ); 
       
+});
+
+app.delete('/order/:order_id', (req, res) => {
+
+    deleteOrderUpdateDatabase(req.params.order_id).then(function (message) {
+      res.status(200).send(message);
+
+    }, function (error){
+      res.status(500).send(error)
+  }
+    ); 
+    
 });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Database \\ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+const updateOrderUpdateDatabase = function(order) {
+    return new Promise(function(resolve, reject) {
+
+        //console.log(order);
+        
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == order.ID){
+                        ordersArray[i].pizzaType = order.pizzaType;
+                        ordersArray[i].numPizzas = order.numPizzas;
+                        order.kundeID = ordersArray[i].kundeID
+                        order.receivedAt = ordersArray[i].receivedAt
+                        order.address = ordersArray[i].address
+                        order.waitTime = ordersArray[i].waitTime
+                        try {
+                        fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                            if (err) {
+                                console.log('Error writing file', err);
+                                reject(Error("It broke"));
+                            }
+                            else {
+                                console.log('Successfully wrote file');
+                                return resolve(order);
+                                
+                            }
+                        });
+                    }
+                    catch (error){reject(Error("It broke"));}
+
+                    }
+                }
+                
+                }
+                
+        
+            catch (error) {
+                return reject(Error("It broke"));
+                //console.log(error);
+                
+            }
+        }
+        else 
+            return reject(Error("It broke"));
+            //console.log(err)
+        });
+
+    })
+  }
+
+
+
+const getOrderDatabase = function(orderID) {
+    return new Promise(function(resolve, reject) {
+        let requiredOrder = new order();
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == orderID){
+                        requiredOrder.ID = orderID; 
+                        requiredOrder.kundeID = ordersArray[i].kundeID;
+                        requiredOrder.receivedAt = ordersArray[i].receivedAt;
+                        requiredOrder.pizzaType = ordersArray[i].pizzaType;
+                        requiredOrder.numPizzas = ordersArray[i].numPizzas;
+                        requiredOrder.address = ordersArray[i].address;
+                        requiredOrder.waitTime = ordersArray[i].waitTime;
+
+
+                       return resolve(requiredOrder);
+
+                    }
+                }
+                //res.status(404).send("User not found")
+                return reject(new Error("Order not found!"));
+                // console.log("User not found");
+                
+                }
+                
+        
+            catch (error) {
+                return reject(new Error("internal Server Error"));
+                //console.log("User not found");
+                
+            }
+        }
+        else 
+        return reject(new Error("internal Server Error"));
+        });
+
+    })
+  }
+
+
+
 const addOrderUpdateDatabase = function(req) {
     return new Promise(function(resolve, reject) {    
         //console.log(path.join(__dirname, 'users.json'))
@@ -183,7 +330,7 @@ const addOrderUpdateDatabase = function(req) {
 
             
               
-              let weather;
+              
               let newOrder = new order();
             
                 newOrder.ID= (ordersCount+1).toString();
@@ -199,35 +346,21 @@ const addOrderUpdateDatabase = function(req) {
                 //console.log(latLng)
                 //res.send(lat.toString());
                 promiseGoogleAPI(latLng).then(function(routeDuration) {
-                    console.log(routeDuration)
-                    newOrder.waitTime = routeDuration.toString()
-                    resolve(newOrder)
-                    console.log(newOrder.waitTime)
+                    let weather;
+                    promiseWeatherAPI.then(main => {
+                        //console.log(main);
+                        weather = main
 
-                  });
-              });
-              
 
-            promiseWeatherAPI.then(main => {
-                console.log(main);
-                weather = main
-               });
-            
-               
-                
-                 
 
-               
-               console.log(weather)
-
-               /*let resultArray = new Array();
-               resultArray.push(routeDuration);
-               resultArray.push(weather);*/
-               
-               
-               
-               /*
-                ordersCount ++;
+                       console.log(weather)
+                       if (weather.localeCompare("Snow") == 0  || weather.localeCompare("Rain") == 0){
+                        newOrder.waitTime = (Math.floor(routeDuration/60) + 10).toString() + " Minutes"
+                       }
+                       else
+                    newOrder.waitTime = (Math.floor(routeDuration/60)).toString() + " Minutes"
+                    
+                    ordersCount ++;
                 if (ordersCount ==1){
                     let ordersArray = new Array();
                     ordersArray.push(newOrder);
@@ -237,7 +370,7 @@ const addOrderUpdateDatabase = function(req) {
                         }
                         else {
                             console.log('Successfully wrote file');
-                            resolve();
+                            resolve(newOrder)
     
                            
                         }
@@ -246,20 +379,20 @@ const addOrderUpdateDatabase = function(req) {
 
                 }
                 else {
-                let usersArray =JSON.parse(result);
+                let ordersArray =JSON.parse(result);
 
-                usersArray.push(newUser);
+                ordersArray.push(newOrder);
 
-                console.log(usersArray)
+                //console.log(usersArray)
                 //console.log(JSON.stringify(usersArray));
-                fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
+                fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
                     if (err) {
                         console.log('Error writing file', err);
                     }
                     else {
                         
                         console.log('Successfully wrote file');
-                            resolve(newUser.ID);
+                        resolve(newOrder)
 
                         
                         
@@ -267,16 +400,21 @@ const addOrderUpdateDatabase = function(req) {
                 });
                 
             }
-            */ 
+
+                  });
+                });
+              });
+   
+
         }
             catch (error) {
-                console.log(error);
+                return reject(new Error("Internal Server Error"));
                 
             }
          
         }
         else 
-            console.log(err)
+        return reject(new Error("Internal Server Error"));
 
 
             
@@ -285,7 +423,48 @@ const addOrderUpdateDatabase = function(req) {
     })
   }
 
+  const deleteOrderUpdateDatabase = function(orderID) {
+    return new Promise(function(resolve, reject) {
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == orderID){
+                        ordersArray.splice(i,1);
+                        try {
+                            fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                                if (err) {
+                                    console.log('Error writing file', err);
+                                    return reject(new Error("Internal Server Error!"));
+                                }
+                                else {
+                                    console.log('Successfully updated file');
+                                    return resolve("Order Deleted!");
+                                    
+                                }
+                            });
+                        }
+                        catch (error){console.log('Error writing file', err);
+                        return reject(new Error("Internal Server Error!"));}
+                        
 
+                    }
+                }
+               
+            }
+            catch (error) {
+                return reject(new Error("User not found!"));
+    
+                
+            }
+        }
+        else 
+            return reject(new Error("User not found!"));
+        });
+
+    })
+  }
 
 const deleteUserUpdateDatabase = function(userID) {
     return new Promise(function(resolve, reject) {
@@ -304,7 +483,7 @@ const deleteUserUpdateDatabase = function(userID) {
                                 }
                                 else {
                                     console.log('Successfully updated file');
-                                    resolve("Done!");
+                                    return resolve("Done!");
                                     
                                 }
                             });
@@ -320,13 +499,13 @@ const deleteUserUpdateDatabase = function(userID) {
                 
         
             catch (error) {
-                reject(Error("User not found!"));
-                console.log("User not found");
+                return reject(new Error("User not found!"));
+                //console.log("User not found");
                 
             }
         }
         else 
-            console.log(err)
+            return reject(new Error("User not found!"));
         });
 
     })
@@ -357,7 +536,7 @@ const updateUserUpdateDatabase = function(user) {
                             }
                             else {
                                 console.log('Successfully wrote file');
-                                resolve(user);
+                                return resolve(user);
                                 
                             }
                         });
@@ -371,14 +550,14 @@ const updateUserUpdateDatabase = function(user) {
                 
         
             catch (error) {
-                reject(Error("It broke"));
-                console.log(error);
+                return reject(Error("It broke"));
+                //console.log(error);
                 
             }
         }
         else 
-            reject(Error("It broke"));
-            console.log(err)
+            return reject(Error("It broke"));
+            //console.log(err)
         });
 
     })
@@ -400,23 +579,25 @@ const getUserDatabase = function(userID) {
                         requiredUser.address = usersArray[i].address;
                         requiredUser.phoneNumber = usersArray[i].phoneNumber;
 
-                        resolve(requiredUser);
+                       return resolve(requiredUser);
 
                     }
                 }
-                console.log("User not found");
-                reject(Error("User not found!"));
+                //res.status(404).send("User not found")
+                return reject(new Error("User not found!"));
+                // console.log("User not found");
+                
                 }
                 
         
             catch (error) {
-                reject(Error("User not found!"));
-                console.log("User not found");
+                return reject(new Error("internal Server Error"));
+                //console.log("User not found");
                 
             }
         }
         else 
-            console.log(err)
+        return reject(new Error("internal Server Error"));
         });
 
     })
@@ -424,15 +605,15 @@ const getUserDatabase = function(userID) {
 
 const addUserUpdateDatabase = function(req) {
     return new Promise(function(resolve, reject) {    
-        console.log(path.join(__dirname, 'users.json'))
+       // console.log(path.join(__dirname, 'users.json'))
 
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
             try {
               
-                
+            
                 let newUser = new user(
-                (usersCount +1 ).toString(),
+                (usersCount + 1).toString(),
                 req.body.user.firstname,
                 req.body.user.lastname,
                 req.body.user.address.toString(),
@@ -440,6 +621,7 @@ const addUserUpdateDatabase = function(req) {
             );
             
             usersCount++;
+
                 if (usersCount ==1){
                     let usersArray = new Array();
                     usersArray.push(newUser);
@@ -449,11 +631,8 @@ const addUserUpdateDatabase = function(req) {
                         }
                         else {
                             console.log('Successfully wrote file');
-                            resolve(newUser.ID);
-    
-                            /*readJSON(path.join(__dirname, 'users.json'), (err, result) => {
-                                console.log(result);
-                            });*/
+                            return resolve(newUser);
+
                             
                         }
                     });
@@ -462,11 +641,24 @@ const addUserUpdateDatabase = function(req) {
                 }
                 else {
                 let usersArray =JSON.parse(result);
+                
+                for (let i = 0; i < usersArray.length ; i++){
+                    if (usersArray[i].firstname == newUser.firstname 
+                        && usersArray[i].lastname == newUser.lastname 
+                        && usersArray[i].address == newUser.address){
+                        usersCount--;
+                        console.log("they are equal!!!!!")
+                        newUser.ID = usersArray[i].ID
+                        newUser.phoneNumber = usersArray[i].phoneNumber
 
+                        return resolve(newUser);
+                }
+
+            }
+                console.log("i still came here!!!!")
                 usersArray.push(newUser);
 
-                console.log(usersArray)
-                //console.log(JSON.stringify(usersArray));
+                //console.log(usersArray)
                 fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
                     if (err) {
                         console.log('Error writing file', err);
@@ -474,18 +666,12 @@ const addUserUpdateDatabase = function(req) {
                     else {
                         
                         console.log('Successfully wrote file');
-                            resolve(newUser.ID);
+                           return resolve(newUser);
 
-                        /*readJSON(path.join(__dirname, 'users.json'), (err, result) => {
-                            console.log(result);
-                        });*/
+                    
                         
                     }
                 });
-                /*fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(usersArray));
-                readJSON(path.join(__dirname, 'users.json'), (err, result) => {
-                    console.log(result);
-                });*/
                
             }
         }
@@ -530,28 +716,13 @@ const googleMapsClient = require('@google/maps').createClient({
       latLng.push(lat);
       latLng.push(lng)
 
-      resolve(latLng)
-       // var longitude = response.json.results[0].geometry.location.lng();
-
-        //console.log(latitude);
-        //console.log(longitude);
+      return resolve(latLng)
+   
     })
     .catch((err) => {
       console.log(err);
     });
   
-  
-  // * Making a reverse geocode request.
-  /*googleMapsClient.reverseGeocode({
-      latlng: '0.714224,-73.961452'  // latlong format
-    })
-    .asPromise()
-    .then((response) => {
-      console.log(response.json.results);
-    })
-    .catch((err) => {
-      console.log(err);
-    });*/
 
 });
   }
@@ -586,7 +757,7 @@ const googleMapsClient = require('@google/maps').createClient({
           //console.log(response.json.rows[0].elements[0].duration.value);
           var value = (response.json.rows[0].elements[0].duration.value);
           //console.log(value)
-          resolve(value);
+         return resolve(value);
         }).catch(err => console.log(err));
       
 });
