@@ -1,8 +1,18 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                                            // Requires \\ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const express = require('express') ;
 const fs = require("fs");
 const bodyParser = require('body-parser')
 const app = express() ;
 var path = require('path');
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                                            // Objects and Variables \\ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var usersCount=0;
 var ordersCount =0;
@@ -50,8 +60,8 @@ app.use(
 
   app.use(bodyParser.json())
 
-
-  const readJSON = (pfad,callback) => {
+//methode zu lesen einer Json Datei 
+const readJSON = (pfad,callback) => {
     try{
         fs.readFile(pfad, "utf8", (err,result)=> {
         if(err)
@@ -72,9 +82,9 @@ app.listen(PORT, () => {
 })
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Get \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -107,9 +117,9 @@ app.get('/user/:user_id', (req, res) => {
        });
    
   
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Post \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 app.post('/user', (req, res)=>{
    
@@ -138,9 +148,9 @@ app.post('/order', (req, res)=>{
 });
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Put \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.put('/user/:user_id', (req, res)=>{
     let user1 = new user(
         req.params.user_id,
@@ -150,8 +160,7 @@ app.put('/user/:user_id', (req, res)=>{
         req.body.user.phoneNumber
     );
     
-
-      updateUserUpdateDatabase(user1).then(function (user) {
+    updateUserUpdateDatabase(user1).then(function (user) {
         //console.log(user)
         res.status(200).send(user);;
 
@@ -171,11 +180,7 @@ app.put('/order/:order_id', (req, res)=>{
         order1.pizzaType = req.body.order.pizzaType,
         order1.numPizzas = req.body.order.numPizzas,
 
-    
-    
-
-      updateOrderUpdateDatabase(order1).then(function (order) {
-        //console.log(user)
+    updateOrderUpdateDatabase(order1).then(function (order) {
         res.status(200).send(order);;
 
       }, function (error){
@@ -185,9 +190,9 @@ app.put('/order/:order_id', (req, res)=>{
 
 });
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Delete \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 app.delete('/user', (req, res) => {
 
@@ -214,257 +219,13 @@ app.delete('/order/:order_id', (req, res) => {
 });
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // Database \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////////////////////// User methoden ///////////////////////////////////////////////////////////////////////
 
-
-
-const updateOrderUpdateDatabase = function(order) {
-    return new Promise(function(resolve, reject) {
-
-        //console.log(order);
-        
-        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
-            if (!err){
-            try {
-                let ordersArray = JSON.parse(result);
-                for (let i = 0; i < ordersArray.length ; i++){
-                    if (ordersArray[i].ID == order.ID){
-                        ordersArray[i].pizzaType = order.pizzaType;
-                        ordersArray[i].numPizzas = order.numPizzas;
-                        order.kundeID = ordersArray[i].kundeID
-                        order.receivedAt = ordersArray[i].receivedAt
-                        order.address = ordersArray[i].address
-                        order.waitTime = ordersArray[i].waitTime
-                        try {
-                        fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
-                            if (err) {
-                                console.log('Error writing file', err);
-                                reject(Error("It broke"));
-                            }
-                            else {
-                                console.log('Successfully wrote file');
-                                return resolve(order);
-                                
-                            }
-                        });
-                    }
-                    catch (error){reject(Error("It broke"));}
-
-                    }
-                }
-                
-                }
-                
-        
-            catch (error) {
-                return reject(Error("It broke"));
-                //console.log(error);
-                
-            }
-        }
-        else 
-            return reject(Error("It broke"));
-            //console.log(err)
-        });
-
-    })
-  }
-
-
-
-const getOrderDatabase = function(orderID) {
-    return new Promise(function(resolve, reject) {
-        let requiredOrder = new order();
-        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
-            if (!err){
-            try {
-                let ordersArray = JSON.parse(result);
-                for (let i = 0; i < ordersArray.length ; i++){
-                    if (ordersArray[i].ID == orderID){
-                        requiredOrder.ID = orderID; 
-                        requiredOrder.kundeID = ordersArray[i].kundeID;
-                        requiredOrder.receivedAt = ordersArray[i].receivedAt;
-                        requiredOrder.pizzaType = ordersArray[i].pizzaType;
-                        requiredOrder.numPizzas = ordersArray[i].numPizzas;
-                        requiredOrder.address = ordersArray[i].address;
-                        requiredOrder.waitTime = ordersArray[i].waitTime;
-
-
-                       return resolve(requiredOrder);
-
-                    }
-                }
-                //res.status(404).send("User not found")
-                return reject(new Error("Order not found!"));
-                // console.log("User not found");
-                
-                }
-                
-        
-            catch (error) {
-                return reject(new Error("internal Server Error"));
-                //console.log("User not found");
-                
-            }
-        }
-        else 
-        return reject(new Error("internal Server Error"));
-        });
-
-    })
-  }
-
-
-
-const addOrderUpdateDatabase = function(req) {
-    return new Promise(function(resolve, reject) {    
-        //console.log(path.join(__dirname, 'users.json'))
-
-        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
-            if (!err){
-            try {
-
-            
-              
-              
-              let newOrder = new order();
-            
-                newOrder.ID= (ordersCount+1).toString();
-                newOrder.kundeID=req.body.order.kundeID;
-                newOrder.receivedAt = req.body.order.receivedAt;
-                newOrder.pizzaType = req.body.order.pizzaType;
-                newOrder.numPizzas = req.body.order.numPizzas;
-                newOrder.address = req.body.order.address;
-                
-                    
-            converteAdressToLatLong(req.body.order.address).then(latLng => {
-
-                //console.log(latLng)
-                //res.send(lat.toString());
-                promiseGoogleAPI(latLng).then(function(routeDuration) {
-                    let weather;
-                    promiseWeatherAPI.then(main => {
-                        //console.log(main);
-                        weather = main
-
-
-
-                       console.log(weather)
-                       if (weather.localeCompare("Snow") == 0  || weather.localeCompare("Rain") == 0){
-                        newOrder.waitTime = (Math.floor(routeDuration/60) + 10).toString() + " Minutes"
-                       }
-                       else
-                    newOrder.waitTime = (Math.floor(routeDuration/60)).toString() + " Minutes"
-                    
-                    ordersCount ++;
-                if (ordersCount ==1){
-                    let ordersArray = new Array();
-                    ordersArray.push(newOrder);
-                    fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
-                        if (err) {
-                            console.log('Error writing file', err);
-                        }
-                        else {
-                            console.log('Successfully wrote file');
-                            resolve(newOrder)
-    
-                           
-                        }
-                    });
-                    
-
-                }
-                else {
-                let ordersArray =JSON.parse(result);
-
-                ordersArray.push(newOrder);
-
-                //console.log(usersArray)
-                //console.log(JSON.stringify(usersArray));
-                fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
-                    if (err) {
-                        console.log('Error writing file', err);
-                    }
-                    else {
-                        
-                        console.log('Successfully wrote file');
-                        resolve(newOrder)
-
-                        
-                        
-                    }
-                });
-                
-            }
-
-                  });
-                });
-              });
-   
-
-        }
-            catch (error) {
-                return reject(new Error("Internal Server Error"));
-                
-            }
-         
-        }
-        else 
-        return reject(new Error("Internal Server Error"));
-
-
-            
-        }); 
-        
-    })
-  }
-
-  const deleteOrderUpdateDatabase = function(orderID) {
-    return new Promise(function(resolve, reject) {
-        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
-            if (!err){
-            try {
-                let ordersArray = JSON.parse(result);
-                for (let i = 0; i < ordersArray.length ; i++){
-                    if (ordersArray[i].ID == orderID){
-                        ordersArray.splice(i,1);
-                        try {
-                            fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
-                                if (err) {
-                                    console.log('Error writing file', err);
-                                    return reject(new Error("Internal Server Error!"));
-                                }
-                                else {
-                                    console.log('Successfully updated file');
-                                    return resolve("Order Deleted!");
-                                    
-                                }
-                            });
-                        }
-                        catch (error){console.log('Error writing file', err);
-                        return reject(new Error("Internal Server Error!"));}
-                        
-
-                    }
-                }
-               
-            }
-            catch (error) {
-                return reject(new Error("User not found!"));
-    
-                
-            }
-        }
-        else 
-            return reject(new Error("User not found!"));
-        });
-
-    })
-  }
 
 const deleteUserUpdateDatabase = function(userID) {
     return new Promise(function(resolve, reject) {
@@ -493,9 +254,7 @@ const deleteUserUpdateDatabase = function(userID) {
 
                     }
                 }
-                //console.log("User not found");
-                //reject(Error("User not found!"));
-                }
+            }
                 
         
             catch (error) {
@@ -510,8 +269,6 @@ const deleteUserUpdateDatabase = function(userID) {
 
     })
   }
-
-
 
 const updateUserUpdateDatabase = function(user) {
     return new Promise(function(resolve, reject) {
@@ -583,19 +340,17 @@ const getUserDatabase = function(userID) {
 
                     }
                 }
-                //res.status(404).send("User not found")
+                
                 return reject(new Error("User not found!"));
-                // console.log("User not found");
-                
-                }
-                
-        
-            catch (error) {
-                return reject(new Error("internal Server Error"));
-                //console.log("User not found");
                 
             }
-        }
+                
+        
+                catch (error) {
+                return reject(new Error("internal Server Error"));
+                
+                }
+            }   
         else 
         return reject(new Error("internal Server Error"));
         });
@@ -687,14 +442,251 @@ const addUserUpdateDatabase = function(req) {
     })
   }
 
+////////////////////////////////////////////////////////////////// Order methoden ///////////////////////////////////////////////////////////////////////
 
 
+const updateOrderUpdateDatabase = function(order) {
+    return new Promise(function(resolve, reject) {
+
+        //console.log(order);
+        
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == order.ID){
+                        ordersArray[i].pizzaType = order.pizzaType;
+                        ordersArray[i].numPizzas = order.numPizzas;
+                        order.kundeID = ordersArray[i].kundeID
+                        order.receivedAt = ordersArray[i].receivedAt
+                        order.address = ordersArray[i].address
+                        order.waitTime = ordersArray[i].waitTime
+                        try {
+                        fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                            if (err) {
+                                console.log('Error writing file', err);
+                                reject(Error("It broke"));
+                            }
+                            else {
+                                console.log('Successfully wrote file');
+                                return resolve(order);
+                                
+                            }
+                        });
+                    }
+                    catch (error){reject(Error("It broke"));}
+
+                    }
+                }
+                
+                }
+                
+        
+            catch (error) {
+                return reject(Error("It broke"));
+                //console.log(error);
+                
+            }
+        }
+        else 
+            return reject(Error("It broke"));
+            //console.log(err)
+        });
+
+    })
+  }
+
+const getOrderDatabase = function(orderID) {
+    return new Promise(function(resolve, reject) {
+        let requiredOrder = new order();
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == orderID){
+                        requiredOrder.ID = orderID; 
+                        requiredOrder.kundeID = ordersArray[i].kundeID;
+                        requiredOrder.receivedAt = ordersArray[i].receivedAt;
+                        requiredOrder.pizzaType = ordersArray[i].pizzaType;
+                        requiredOrder.numPizzas = ordersArray[i].numPizzas;
+                        requiredOrder.address = ordersArray[i].address;
+                        requiredOrder.waitTime = ordersArray[i].waitTime;
 
 
+                       return resolve(requiredOrder);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    }
+                }
+                //res.status(404).send("User not found")
+                return reject(new Error("Order not found!"));
+                // console.log("User not found");
+                
+                }
+                
+        
+            catch (error) {
+                return reject(new Error("internal Server Error"));
+                //console.log("User not found");
+                
+            }
+        }
+        else 
+        return reject(new Error("internal Server Error"));
+        });
+
+    })
+  }
+
+const addOrderUpdateDatabase = function(req) {
+    return new Promise(function(resolve, reject) {    
+        //console.log(path.join(__dirname, 'users.json'))
+
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+
+            
+              
+              
+              let newOrder = new order();
+                
+                newOrder.ID= (ordersCount+1).toString();
+                newOrder.kundeID=req.body.order.kundeID;
+                newOrder.receivedAt = req.body.order.receivedAt;
+                newOrder.pizzaType = req.body.order.pizzaType;
+                newOrder.numPizzas = req.body.order.numPizzas;
+                newOrder.address = req.body.order.address;
+                
+                ordersCount ++;       
+            converteAdressToLatLong(req.body.order.address).then(latLng => {
+
+                promiseGoogleAPI(latLng).then(function(routeDurationInSecond) {
+                    let weather;
+                    promiseWeatherAPI.then(main => {
+                        //console.log(main);
+                        weather = main
+
+
+                        let minutes= 60; // second
+                       console.log(weather)
+                       if (weather.localeCompare("Snow") == 0  || weather.localeCompare("Rain") == 0){
+                        
+                        newOrder.waitTime = (Math.floor(routeDurationInSecond/minutes) + 10).toString() + " Minutes"
+                       }
+                       else
+                    newOrder.waitTime = (Math.floor(routeDurationInSecond/minutes)).toString() + " Minutes"
+                    
+                   
+                if (ordersCount ==1){
+                    let ordersArray = new Array();
+                    ordersArray.push(newOrder);
+                    fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                        if (err) {
+                            console.log('Error writing file', err);
+                        }
+                        else {
+                            console.log('Successfully wrote file');
+                            resolve(newOrder)
+    
+                           
+                        }
+                    });
+                    
+
+                }
+                else {
+                let ordersArray =JSON.parse(result);
+
+                ordersArray.push(newOrder);
+
+                fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                    if (err) {
+                        console.log('Error writing file', err);
+                    }
+                    else {
+                        
+                        console.log('Successfully wrote file');
+                        resolve(newOrder)
+
+                        
+                        
+                    }
+                });
+                
+            }
+
+                  });
+                });
+              });
+   
+
+        }
+            catch (error) {
+                return reject(new Error("Internal Server Error"));
+                
+            }
+         
+        }
+        else 
+        return reject(new Error("Internal Server Error"));
+
+
+            
+        }); 
+        
+    })
+  }
+
+const deleteOrderUpdateDatabase = function(orderID) {
+    return new Promise(function(resolve, reject) {
+        readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
+            if (!err){
+            try {
+                let ordersArray = JSON.parse(result);
+                for (let i = 0; i < ordersArray.length ; i++){
+                    if (ordersArray[i].ID == orderID){
+                        ordersArray.splice(i,1);
+                        try {
+                            fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
+                                if (err) {
+                                    console.log('Error writing file', err);
+                                    return reject(new Error("Internal Server Error!"));
+                                }
+                                else {
+                                    console.log('Successfully updated file');
+                                    return resolve("Order Deleted!");
+                                    
+                                }
+                            });
+                        }
+                        catch (error){console.log('Error writing file', err);
+                        return reject(new Error("Internal Server Error!"));}
+                        
+
+                    }
+                }
+               
+            }
+            catch (error) {
+                return reject(new Error("User not found!"));
+    
+                
+            }
+        }
+        else 
+            return reject(new Error("User not found!"));
+        });
+
+    })
+  }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                             // APIs \\ 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 const converteAdressToLatLong = function(address) {
     return new Promise(function(resolve, reject) {    
 
@@ -727,7 +719,7 @@ const googleMapsClient = require('@google/maps').createClient({
 });
   }
 
-  const promiseGoogleAPI = function(latLng) {
+const promiseGoogleAPI = function(latLng) {
     return new Promise(function(resolve, reject) {    
 
   const googleMapsClient = require('@google/maps').createClient({
@@ -753,17 +745,13 @@ const googleMapsClient = require('@google/maps').createClient({
           destinations: `${coordinates.destinations.lat},${coordinates.destinations.long}`,
           mode: 'driving' //other mode include "walking" , "bicycling", "transit"
         }).asPromise().then((response) => {
-          //console.log(response)
-          //console.log(response.json.rows[0].elements[0].duration.value);
           var value = (response.json.rows[0].elements[0].duration.value);
-          //console.log(value)
+          
          return resolve(value);
         }).catch(err => console.log(err));
       
 });
-}
-
-
+  }
 
 const promiseWeatherAPI = new Promise(function(resolve, reject) {    
 
@@ -783,12 +771,8 @@ request(url, function (err, response, body) {
   } else {
     let result = JSON.parse(body);
 
-    //let message = `It's ${weather.main.temp} degrees in
-    //${weather.name}!`;
     resolve(result.weather[0].main);
     
-
-
   }
 });
 
