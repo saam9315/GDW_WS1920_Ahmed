@@ -18,7 +18,7 @@ var usersCount=0;
 var ordersCount =0;
 
 class order {
-    constructor(ID, kundeID, receivedAt, pizzaType, numPizzas, address, waitTime) {
+    constructor(ID, kundeID, receivedAt, pizzaType, numPizzas, address, waitTime, url) {
         this.ID = ID;
         this.kundeID = kundeID;
         this.receivedAt = receivedAt;
@@ -26,27 +26,30 @@ class order {
         this.numPizzas = numPizzas;
         this.address = address;
         this.waitTime = waitTime;
+        this.url = url
     }
 }
 
 class user {
-    constructor(ID, firstname, lastname, address, phoneNumber) {
+    constructor(ID, firstname, lastname, address, phoneNumber, url) {
         this.ID = ID;
         this.firstname = firstname;
         this.lastname = lastname;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.url = url
     }
 }
 
 class driver {
-    constructor(ID, firstname, lastname, address, ordersToDeliver, route) {
+    constructor(ID, firstname, lastname, address, ordersToDeliver, route, url) {
         this.ID = ID;
         this.firstname = firstname;
         this.lastname = lastname;
         this.address = address;
         this.ordersToDeliver = ordersToDeliver;
         this.route = route;
+        this.url = url
     }
 }
 
@@ -372,7 +375,8 @@ const addUserUpdateDatabase = function(req) {
                 req.body.user.firstname,
                 req.body.user.lastname,
                 req.body.user.address.toString(),
-                req.body.user.phoneNumber.toString()
+                req.body.user.phoneNumber.toString(),
+                "http://localhost:5000/user/"+ (usersCount + 1).toString()
             );
             
             usersCount++;
@@ -558,6 +562,7 @@ const addOrderUpdateDatabase = function(req) {
                 newOrder.pizzaType = req.body.order.pizzaType;
                 newOrder.numPizzas = req.body.order.numPizzas;
                 newOrder.address = req.body.order.address;
+                newOrder.url = "http://localhost:5000/order/"+ (ordersCount + 1).toString()
                 
                 ordersCount ++;       
             converteAdressToLatLong(req.body.order.address).then(latLng => {

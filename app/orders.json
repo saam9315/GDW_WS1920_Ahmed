@@ -1,1 +1,1 @@
-[{"ID":"1","kundeID":"1","receivedAt":"123234","pizzaType":"funghi","numPizzas":"23","address":"Leichlingen, Deutschland","waitTime":"58 Minutes"},{"ID":"2","kundeID":"1","receivedAt":"123234","pizzaType":"Tunfish","numPizzas":"23","address":"Köln, Deutschland","waitTime":"55 Minutes"}]
+[{"ID":"1","kundeID":"1","receivedAt":"123234","pizzaType":"Tunfish","numPizzas":"23","address":"Köln, Deutschland","waitTime":"55 Minutes","url":"http://localhost:5000/order/1"}]
