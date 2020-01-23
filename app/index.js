@@ -197,13 +197,13 @@ app.put('/order/:order_id', (req, res)=>{
                                                                             // Delete \\ 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-app.delete('/user', (req, res) => {
+app.delete('/user/:user_id', (req, res) => {
 
-      deleteUserUpdateDatabase(req.body.user.ID).then(function (message) {
+      deleteUserUpdateDatabase(req.params.user_id).then(function (message) {
         res.status(200).send(message);
 
       }, function (error){
-        res.status(500).send(error)
+        res.status(500).send(error.toString())
     }
       ); 
       
@@ -234,16 +234,17 @@ const deleteUserUpdateDatabase = function(userID) {
     return new Promise(function(resolve, reject) {
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
-            try {
+                let found = 0;
                 let usersArray = JSON.parse(result);
                 for (let i = 0; i < usersArray.length ; i++){
                     if (usersArray[i].ID == userID){
+                        found =1;
                         usersArray.splice(i,1);
                         try {
                             fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
                                 if (err) {
                                     console.log('Error writing file', err);
-                                    reject(Error("It broke"));
+                                    return reject(Error("It broke"));
                                 }
                                 else {
                                     console.log('Successfully updated file');
@@ -252,19 +253,13 @@ const deleteUserUpdateDatabase = function(userID) {
                                 }
                             });
                         }
-                        catch (error){reject(Error("It broke"));}
+                        catch (Error){reject(new Error("Internal Server Error!"));}
                         
 
                     }
                 }
-            }
+                // if(found==1) return reject(new Error("User not found!"));
                 
-        
-            catch (error) {
-                return reject(new Error("User not found!"));
-                //console.log("User not found");
-                
-            }
         }
         else 
             return reject(new Error("User not found!"));
@@ -280,7 +275,7 @@ const updateUserUpdateDatabase = function(user) {
         
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
-            try {
+       
                 let usersArray = JSON.parse(result);
                 for (let i = 0; i < usersArray.length ; i++){
                     if (usersArray[i].ID == user.ID){
@@ -293,31 +288,27 @@ const updateUserUpdateDatabase = function(user) {
                         fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
                             if (err) {
                                 console.log('Error writing file', err);
-                                reject(Error("It broke"));
+                                return reject(new Error("Internal Server Error"));
                             }
                             else {
                                 console.log('Successfully wrote file');
                                 return resolve(user);
                                 
+                                
                             }
                         });
                     }
-                    catch (error){reject(Error("It broke"));}
+                    catch (error){reject(new Error("Internal Server Error"));}
 
                     }
+                    
                 }
+                //return reject(new Error("Internal Server Error"))
                 
-                }
-                
-        
-            catch (error) {
-                return reject(Error("It broke"));
-                //console.log(error);
-                
-            }
+  
         }
         else 
-            return reject(Error("It broke"));
+            return reject(new Error("Internal Server Error!"));
             //console.log(err)
         });
 
@@ -330,7 +321,7 @@ const getUserDatabase = function(userID) {
         let requiredUser = new user();
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
-            try {
+            
                 let usersArray = JSON.parse(result);
                 for (let i = 0; i < usersArray.length ; i++){
                     if (usersArray[i].ID == userID){
@@ -347,13 +338,7 @@ const getUserDatabase = function(userID) {
                 
                 return reject(new Error("User not found!"));
                 
-            }
-                
-        
-                catch (error) {
-                return reject(new Error("internal Server Error"));
-                
-                }
+
             }   
         else 
         return reject(new Error("internal Server Error"));
@@ -368,7 +353,7 @@ const addUserUpdateDatabase = function(req) {
 
         readJSON(path.join(__dirname, 'users.json'), (err, result) => {
             if (!err){
-            try {
+          
               
             
                 let newUser = new user(
@@ -434,14 +419,10 @@ const addUserUpdateDatabase = function(req) {
                 });
                
             }
-        }
-            catch (error) {
-                console.log(error);
-                
-            }
+
         }
         else 
-            console.log(err)
+            reject(new Error("Internal Server Error"));
         });
 
     })
@@ -457,7 +438,7 @@ const updateOrderUpdateDatabase = function(order) {
         
         readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
             if (!err){
-            try {
+            
                 let ordersArray = JSON.parse(result);
                 for (let i = 0; i < ordersArray.length ; i++){
                     if (ordersArray[i].ID == order.ID){
@@ -486,14 +467,7 @@ const updateOrderUpdateDatabase = function(order) {
                     }
                 }
                 
-                }
-                
-        
-            catch (error) {
-                return reject(Error("It broke"));
-                //console.log(error);
-                
-            }
+ 
         }
         else 
             return reject(Error("It broke"));
@@ -508,7 +482,7 @@ const getOrderDatabase = function(orderID) {
         let requiredOrder = new order();
         readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
             if (!err){
-            try {
+            
                 let ordersArray = JSON.parse(result);
                 for (let i = 0; i < ordersArray.length ; i++){
                     if (ordersArray[i].ID == orderID){
@@ -529,14 +503,9 @@ const getOrderDatabase = function(orderID) {
                 return reject(new Error("Order not found!"));
                 // console.log("User not found");
                 
-                }
+                
                 
         
-            catch (error) {
-                return reject(new Error("internal Server Error"));
-                //console.log("User not found");
-                
-            }
         }
         else 
         return reject(new Error("internal Server Error"));
@@ -551,9 +520,6 @@ const addOrderUpdateDatabase = function(req) {
 
         readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
             if (!err){
-            try {
-
-            
               
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -630,11 +596,7 @@ const addOrderUpdateDatabase = function(req) {
               });
    
 
-        }
-            catch (error) {
-                return reject(new Error("Internal Server Error"));
-                
-            }
+        
          
         }
         else 
@@ -651,7 +613,7 @@ const deleteOrderUpdateDatabase = function(orderID) {
     return new Promise(function(resolve, reject) {
         readJSON(path.join(__dirname, 'orders.json'), (err, result) => {
             if (!err){
-            try {
+            
                 let ordersArray = JSON.parse(result);
                 for (let i = 0; i < ordersArray.length ; i++){
                     if (ordersArray[i].ID == orderID){
@@ -676,12 +638,7 @@ const deleteOrderUpdateDatabase = function(orderID) {
                     }
                 }
                
-            }
-            catch (error) {
-                return reject(new Error("User not found!"));
-    
-                
-            }
+
         }
         else 
             return reject(new Error("User not found!"));
