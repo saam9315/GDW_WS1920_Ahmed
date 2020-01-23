@@ -288,6 +288,7 @@ const updateUserUpdateDatabase = function(user) {
                         usersArray[i].lastname = user.lastname;
                         usersArray[i].address = user.address;
                         usersArray[i].phoneNumber = user.phoneNumber;
+                        user.url = usersArray[i].url
                         try {
                         fs.writeFile(path.join(__dirname, 'users.json'), JSON.stringify(usersArray), (err) => {
                             if (err) {
@@ -466,6 +467,7 @@ const updateOrderUpdateDatabase = function(order) {
                         order.receivedAt = ordersArray[i].receivedAt
                         order.address = ordersArray[i].address
                         order.waitTime = ordersArray[i].waitTime
+                        order.url = ordersArray[i].url
                         try {
                         fs.writeFile(path.join(__dirname, 'orders.json'), JSON.stringify(ordersArray), (err) => {
                             if (err) {
@@ -553,12 +555,13 @@ const addOrderUpdateDatabase = function(req) {
 
             
               
-              
+            var today = new Date();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
               let newOrder = new order();
                 
                 newOrder.ID= (ordersCount+1).toString();
                 newOrder.kundeID=req.body.order.kundeID;
-                newOrder.receivedAt = req.body.order.receivedAt;
+                newOrder.receivedAt = time;
                 newOrder.pizzaType = req.body.order.pizzaType;
                 newOrder.numPizzas = req.body.order.numPizzas;
                 newOrder.address = req.body.order.address;
