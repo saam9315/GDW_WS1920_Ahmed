@@ -10,7 +10,8 @@
   "dependencies": {
     "@google/maps": "^1.0.2",
     "express": "^4.17.1",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "request": "^2.88.0"
   },
   "devDependencies": {},
   "description": "GDW App PizzaGummersbach",

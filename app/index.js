@@ -7,6 +7,7 @@ const fs = require("fs");
 const bodyParser = require('body-parser')
 const app = express() ;
 var path = require('path');
+const request = require('request');
 
 
 
@@ -657,7 +658,7 @@ const converteAdressToLatLong = function(address) {
 
 
 const googleMapsClient = require('@google/maps').createClient({
-    key: 'AIzaSyBa0pkN9HR04XUDVLvJhxtU6LUoeuTJbV4',
+    key: 'AIzaSyDtPQ5eMuaCYHUazLkjHE_5GowrXe3bV-g',
     Promise: Promise
   });
   
@@ -688,7 +689,7 @@ const promiseGoogleAPI = function(latLng) {
     return new Promise(function(resolve, reject) {    
 
   const googleMapsClient = require('@google/maps').createClient({
-    key: 'AIzaSyBa0pkN9HR04XUDVLvJhxtU6LUoeuTJbV4',
+    key: 'AIzaSyDtPQ5eMuaCYHUazLkjHE_5GowrXe3bV-g',
     Promise: Promise
   });
 
@@ -720,9 +721,9 @@ const promiseGoogleAPI = function(latLng) {
 
 const promiseWeatherAPI = new Promise(function(resolve, reject) {    
 
-const request = require('request');
 
-let apiKey = "e39c5eea5885613eaabe5d2d70b9c5af";
+
+let apiKey = "796ef98b0a9f4ffd45ad9b3850f8ea87";
 
 let city = "Gummersbach";
 
